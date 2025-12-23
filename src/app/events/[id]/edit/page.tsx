@@ -1,3 +1,6 @@
+import { EventForm } from "@/components/pages/EventForm";
+import { fetchEvent } from "@/lib/hooks";
+
 export default async function editEvent({
   params,
 }: {
@@ -5,5 +8,6 @@ export default async function editEvent({
 }) {
   // event-id
   const { id } = await params;
-  return <div>{id}</div>;
+  const event = await fetchEvent(id);
+  return <EventForm id={id} event={event} />;
 }

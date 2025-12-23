@@ -6,22 +6,35 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate:db": "npx drizzle-kit migrate --config=./src/db/drizzle.config.ts",
+    "generate:db": "npx drizzle-kit generate --config=./src/db/drizzle.config.ts",
+    "push:db": "npx drizzle-kit push --config=./src/db/drizzle.config.ts",
+    "studio:db": "npx drizzle-kit studio --config=./src/db/drizzle.config.ts"
   },
   "dependencies": {
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.45.1",
+    "lucide-react": "^0.562.0",
     "next": "16.1.1",
+    "pg": "^8.16.3",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "drizzle-kit": "^0.31.8",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   },
   "ignoreScripts": [
