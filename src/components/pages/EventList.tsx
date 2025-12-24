@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { Plus, Search, Calendar } from "lucide-react";
-import { Events } from "@/lib/types";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { EmptyState } from "../EmptyState";
@@ -16,26 +15,12 @@ const ITEMS_PER_PAGE = 5;
 export function EventsList() {
   const { data: events, isLoading } = useEvents();
 
-  if (!events) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-red-600">Event not found</p>
-        <Link
-          href="/"
-          className="text-sm text-gray-600 hover:text-gray-900 mt-4 inline-block"
-        >
-          Return to Events List
-        </Link>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  if (isLoading || !events) {
+    return <LoadingSpinner />;
+  }
 
   const stats = useMemo(() => {
     const total = events.length;

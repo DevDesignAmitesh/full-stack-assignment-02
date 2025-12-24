@@ -20,6 +20,23 @@ export function EventDetail({ id }: { id: string }) {
   const { data: event, isLoading } = useEvent(id);
   const { mutate, isPending } = useDeleteEvent();
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    if (!id) return;
+
+    try {
+      mutate(id);
+      router.push("/");
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      alert("Failed to delete event. Please try again.");
+    } finally {
+    }
+  };
+
   if (!event) {
     return (
       <div className="text-center py-12">
@@ -37,23 +54,6 @@ export function EventDetail({ id }: { id: string }) {
   if (isLoading) {
     return <LoadingSpinner />;
   }
-
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  const router = useRouter();
-
-  const handleDelete = async () => {
-    if (!id) return;
-
-    try {
-      mutate(id);
-      router.push("/");
-    } catch (error) {
-      console.error("Error deleting event:", error);
-      alert("Failed to delete event. Please try again.");
-    } finally {
-    }
-  };
 
   return (
     <div className="max-w-5xl mx-auto">
