@@ -1,15 +1,38 @@
-import { Events } from "@/lib/types";
+import { createOrUpdateEventSchema, Events } from "@/lib/types";
 import { db } from "@/db";
 import { events } from "@/db/db";
-import { responsePlate } from "@/lib/utils";
+import { responsePlate, zodErrorMessage } from "@/lib/utils";
 import { uploadToImageKit } from "@/lib/image-kit";
+import { toast } from "sonner";
 
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
 
-    console.log("formData while post")
-    console.log(formData)
+    const raw = Object.fromEntries(formData.entries());
+
+    const parsedData = {
+      title: raw.title,
+      description: raw.description ?? "",
+      event_date: raw.event_date,
+      location: raw.location,
+      status: raw.status,
+      tags: raw.tags ? JSON.parse(raw.tags as string) : [],
+      tickets_sold: Number(raw.tickets_sold ?? 0),
+    };
+
+    console.log("parsedData");
+    console.log(parsedData);
+
+    const { success, error } = createOrUpdateEventSchema.safeParse(parsedData);
+
+    if (!success) {
+      toast.error(zodErrorMessage({ error }));
+      return null;
+    }
+
+    console.log("formData while post");
+    console.log(formData);
 
     const image = formData.get("image") as File | null;
 

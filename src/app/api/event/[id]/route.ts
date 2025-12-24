@@ -1,9 +1,14 @@
 import { db, eq } from "@/db";
 import { events } from "@/db/db";
 import { uploadToImageKit } from "@/lib/image-kit";
-import { Events } from "@/lib/types";
-import { responsePlate } from "@/lib/utils";
+import {
+  createOrUpdateEventSchema,
+  deleteOrFetchEvent,
+  Events,
+} from "@/lib/types";
+import { responsePlate, zodErrorMessage } from "@/lib/utils";
 import { NextRequest } from "next/server";
+import { toast } from "sonner";
 
 export async function GET(
   _req: NextRequest,
@@ -11,8 +16,16 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const { success, error, data } = deleteOrFetchEvent.safeParse({
+      eventId: id,
+    });
+
+    if (!success) {
+      toast.error(zodErrorMessage({ error }));
+      return null;
+    }
     const event = await db.query.events.findFirst({
-      where: eq(events.id, id),
+      where: eq(events.id, data.eventId),
     });
 
     if (!event) {
@@ -38,14 +51,45 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const formData = await req.formData();
-
-    const existingEvent = await db.query.events.findFirst({
-      where: eq(events.id, id),
+    const { success, error, data } = deleteOrFetchEvent.safeParse({
+      eventId: id,
     });
 
-    console.log("existingEvent")
-    console.log(existingEvent)
+    if (!success) {
+      toast.error(zodErrorMessage({ error }));
+      return null;
+    }
+    const existingEvent = await db.query.events.findFirst({
+      where: eq(events.id, data.eventId),
+    });
+
+    const formData = await req.formData();
+
+    const raw = Object.fromEntries(formData.entries());
+
+    const parsedData = {
+      title: raw.title,
+      description: raw.description ?? "",
+      event_date: raw.event_date,
+      location: raw.location,
+      status: raw.status,
+      tags: raw.tags ? JSON.parse(raw.tags as string) : [],
+      tickets_sold: Number(raw.tickets_sold ?? 0),
+    };
+
+    console.log("parsedData");
+    console.log(parsedData);
+
+    const { success: s2, error: e2 } =
+      createOrUpdateEventSchema.safeParse(parsedData);
+
+    if (!s2) {
+      toast.error(zodErrorMessage({ error: e2 }));
+      return null;
+    }
+
+    console.log("existingEvent");
+    console.log(existingEvent);
 
     if (!existingEvent) {
       return responsePlate({
@@ -105,8 +149,16 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    const { success, error, data } = deleteOrFetchEvent.safeParse({
+      eventId: id,
+    });
+
+    if (!success) {
+      toast.error(zodErrorMessage({ error }));
+      return null;
+    }
     const event = await db.query.events.findFirst({
-      where: eq(events.id, id),
+      where: eq(events.id, data.eventId),
     });
 
     if (!event) {
