@@ -4,7 +4,7 @@ import { useState, useEffect, FormEvent } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createEvent, updateEvent } from "@/lib/hooks";
-import { Events } from "@/lib/types";
+import { Events, FormDataProps } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 
 export function EventForm({
@@ -17,14 +17,15 @@ export function EventForm({
   const router = useRouter();
   const isEdit = Boolean(id);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataProps>({
     title: "",
     description: "",
     event_date: "",
     location: "",
-    status: "draft" as "draft" | "upcoming" | "completed" | "cancelled",
+    status: "draft",
     tags: "",
     tickets_sold: 0,
+    imgUrl: "",
   });
 
   const [submitting, setSubmitting] = useState(false);
@@ -46,39 +47,47 @@ export function EventForm({
         status: event.status,
         tags: event.tags.join(", "),
         tickets_sold: event.tickets_sold,
+        imgUrl: event.imgUrl,
       });
     }
   }, [event]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     setSubmitting(true);
 
     try {
-      const eventData: Events = {
-        title: formData.title.trim(),
-        description: formData.description.trim(),
-        event_date: formData.event_date,
-        location: formData.location.trim(),
-        status: formData.status,
-        tags: formData.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter((tag) => tag.length > 0),
-        tickets_sold: formData.tickets_sold,
-        id: uuid(),
-      };
+      const payload = new FormData();
+
+      payload.append("title", formData.title.trim());
+      payload.append("description", formData.description.trim());
+      payload.append("event_date", formData.event_date);
+      payload.append("location", formData.location.trim());
+      payload.append("status", formData.status);
+      payload.append(
+        "tags",
+        JSON.stringify(
+          formData.tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        )
+      );
+      payload.append("tickets_sold", String(formData.tickets_sold));
+
+      if (formData.imgUrl instanceof File) {
+        payload.append("image", formData.imgUrl);
+      }
 
       if (isEdit && id) {
-        await updateEvent(id, eventData);
+        await updateEvent(id, payload);
       } else {
-        await createEvent(eventData);
+        await createEvent(payload);
       }
 
       router.push("/");
-    } catch (error) {
-      console.error("Error saving event:", error);
+    } catch (err) {
+      console.error("Error saving event:", err);
     } finally {
       setSubmitting(false);
     }
@@ -92,6 +101,23 @@ export function EventForm({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      imgUrl: file,
+    }));
+  };
+
+  const imagePreview =
+    formData.imgUrl instanceof File
+      ? URL.createObjectURL(formData.imgUrl)
+      : typeof formData.imgUrl === "string" && formData.imgUrl.length > 0
+      ? formData.imgUrl
+      : null;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -251,6 +277,34 @@ export function EventForm({
             <p className="mt-1 text-sm text-gray-500">
               Separate multiple tags with commas
             </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Event Image
+            </label>
+
+            {imagePreview && (
+              <div className="mb-3">
+                <img
+                  src={imagePreview}
+                  alt="Event preview"
+                  className="h-40 w-full object-cover rounded-lg border"
+                />
+              </div>
+            )}
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="block w-full text-sm text-gray-600
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-lg file:border-0
+                file:text-sm file:font-medium
+                file:bg-gray-100 file:text-gray-700
+                hover:file:bg-gray-200"
+            />
           </div>
 
           <div className="flex items-center gap-3 pt-4">

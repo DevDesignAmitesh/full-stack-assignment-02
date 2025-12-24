@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1766498878025,
-      "tag": "0000_nifty_yellowjacket",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1766504400710,
-      "tag": "0001_third_zuras",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1766504673804,
-      "tag": "0002_glorious_revanche",
+      "when": 1766547118833,
+      "tag": "0000_black_beast",
       "breakpoints": true
     }
   ]

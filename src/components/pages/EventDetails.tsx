@@ -53,7 +53,17 @@ export function EventDetail({ id, event }: { id: string; event: Events }) {
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="h-48 bg-linear-to-r from-gray-100 to-gray-200"></div>
+        <div className="h-48 bg-gray-100 overflow-hidden">
+          {event.imgUrl ? (
+            <img
+              src={event.imgUrl}
+              alt={event.title}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="h-full bg-linear-to-r from-gray-100 to-gray-200" />
+          )}
+        </div>
 
         <div className="p-8">
           <div className="flex items-start justify-between mb-6">

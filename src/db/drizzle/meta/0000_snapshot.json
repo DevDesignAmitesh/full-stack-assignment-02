@@ -1,5 +1,5 @@
 {
-  "id": "bbf3e765-5924-4cd1-8e83-8125fd92e401",
+  "id": "9492b5cf-5b3a-4968-a469-4665f63f82b4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -17,6 +17,12 @@
         },
         "title": {
           "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "imgUrl": {
+          "name": "imgUrl",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -45,8 +51,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "tickes_sold": {
-          "name": "tickes_sold",
+        "tickets_sold": {
+          "name": "tickets_sold",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -88,6 +94,7 @@
       "name": "status",
       "schema": "public",
       "values": [
+        "draft",
         "upcoming",
         "completed",
         "cancelled"

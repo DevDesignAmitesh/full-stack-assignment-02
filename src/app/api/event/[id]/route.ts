@@ -1,5 +1,6 @@
 import { db, eq } from "@/db";
 import { events } from "@/db/db";
+import { uploadToImageKit } from "@/lib/image-kit";
 import { Events } from "@/lib/types";
 import { responsePlate } from "@/lib/utils";
 import { NextRequest } from "next/server";
@@ -37,23 +38,50 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const body: Omit<Events, "createdAt" | "updatedAt"> = await req.json();
+    const formData = await req.formData();
 
-    const event = await db.query.events.findFirst({
+    const existingEvent = await db.query.events.findFirst({
       where: eq(events.id, id),
     });
 
-    if (!event) {
-      return responsePlate({ message: "Event not found", status: 404 });
+    console.log("existingEvent")
+    console.log(existingEvent)
+
+    if (!existingEvent) {
+      return responsePlate({
+        message: "Event not found",
+        status: 404,
+      });
     }
+
+    const image = formData.get("image") as File | null;
+    let imgUrl = existingEvent.imgUrl;
+
+    if (image && image.size > 0) {
+      imgUrl = await uploadToImageKit(image, "events");
+    }
+
+    const updatedBody: Partial<Omit<Events, "createdAt" | "updatedAt">> = {
+      title: String(formData.get("title")),
+      description: String(formData.get("description") ?? ""),
+      location: String(formData.get("location")),
+      event_date: String(formData.get("event_date")),
+      status: formData.get("status") as Events["status"],
+      tags: JSON.parse(String(formData.get("tags") ?? "[]")),
+      tickets_sold: Number(formData.get("tickets_sold") ?? 0),
+      imgUrl,
+    };
 
     const updatedEvent = await db
       .update(events)
-      .set({ ...body, event_date: new Date(body.event_date) })
-      .where(eq(events.id, event.id))
-      .returning({
-        id: events.id,
-      });
+      .set({
+        ...updatedBody,
+        event_date: new Date(updatedBody.event_date!),
+        imgUrl:
+          typeof updatedBody.imgUrl === "string" ? updatedBody.imgUrl : "",
+      })
+      .where(eq(events.id, id))
+      .returning({ id: events.id });
 
     return responsePlate({
       message: "Event updated",
@@ -63,6 +91,7 @@ export async function PUT(
       },
     });
   } catch (e) {
+    console.error("error while updating event", e);
     return responsePlate({
       message: "Internal server error",
       status: 500,

@@ -9,7 +9,7 @@ import { EmptyState } from "../EmptyState";
 import { EventRow } from "../EventRow";
 import { StatCard } from "../StatCard";
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 5;
 
 export function EventsList({ events }: { events: Events[] }) {
   const [searchQuery, setSearchQuery] = useState("");

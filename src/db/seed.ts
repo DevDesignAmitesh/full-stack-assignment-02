@@ -11,8 +11,10 @@ async function seed() {
       location: "Bangalore",
       event_date: new Date("2025-03-15T10:00:00Z"),
       tags: ["tech", "conference", "developers"],
-      tickes_sold: 120,
+      tickets_sold: 120,
       status: "upcoming",
+      imgUrl:
+        "https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg",
     },
     {
       title: "Startup Meetup",
@@ -20,8 +22,10 @@ async function seed() {
       location: "Delhi",
       event_date: new Date("2025-02-10T18:00:00Z"),
       tags: ["startup", "networking"],
-      tickes_sold: 80,
+      tickets_sold: 80,
       status: "upcoming",
+      imgUrl:
+        "https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg",
     },
     {
       title: "Music Festival",
@@ -29,8 +33,10 @@ async function seed() {
       location: "Mumbai",
       event_date: new Date("2024-12-01T16:00:00Z"),
       tags: ["music", "festival", "live"],
-      tickes_sold: 500,
+      tickets_sold: 500,
       status: "completed",
+      imgUrl:
+        "https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg",
     },
     {
       title: "Product Launch Event",
@@ -38,8 +44,10 @@ async function seed() {
       location: "Hyderabad",
       event_date: new Date("2025-01-20T11:00:00Z"),
       tags: ["product", "launch"],
-      tickes_sold: 40,
+      tickets_sold: 40,
       status: "draft",
+      imgUrl:
+        "https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg",
     },
   ]);
 

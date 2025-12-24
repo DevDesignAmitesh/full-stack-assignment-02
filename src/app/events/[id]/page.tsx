@@ -1,8 +1,6 @@
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { EventDetail } from "@/components/pages/EventDetails";
 import { fetchEvent } from "@/lib/hooks";
 import { Link } from "lucide-react";
-import { Suspense } from "react";
 
 export default async function viewEvent({
   params,

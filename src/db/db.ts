@@ -17,6 +17,7 @@ export const eventStatus = pgEnum("status", [
 export const events = pgTable("events", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").notNull(),
+  imgUrl: text("imgUrl").notNull(),
   description: text("description").notNull(),
   location: text("location").notNull(),
   event_date: timestamp("event_date").notNull(),

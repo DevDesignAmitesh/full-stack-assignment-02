@@ -1,1 +1,0 @@
-ALTER TABLE "events" RENAME COLUMN "tickes_sold" TO "tickets_sold";

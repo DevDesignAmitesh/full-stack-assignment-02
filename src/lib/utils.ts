@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { ZodError } from "zod";
+import axios from "axios";
+import { toast } from "sonner";
 
 export const BACKEND_URL = "http://localhost:3000";
 
@@ -24,3 +27,20 @@ export const responsePlate = ({
 }) => {
   return NextResponse.json({ message, data }, { status });
 };
+
+export const zodErrorMessage = ({ error }: { error: ZodError }) => {
+  return error.issues
+    .map((er) => `${er.path.join(".")}: ${er.message}`)
+    .join(", ");
+};
+
+export function handleAxiosError(err: unknown, fallback: string) {
+  if (axios.isAxiosError(err)) {
+    const message = err.response?.data?.message || fallback;
+    console.log(message);
+    toast.error(message);
+    return;
+  }
+  console.log(fallback);
+  toast.error(fallback);
+}
