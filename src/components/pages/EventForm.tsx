@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createEvent, updateEvent } from "@/lib/hooks";
 import { Events, FormDataProps } from "@/lib/types";
-import { v4 as uuid } from "uuid";
+import { useCreateEvent, useUpdateEvent } from "@/query/lib";
 
 export function EventForm({
   id,
@@ -17,6 +17,11 @@ export function EventForm({
   const router = useRouter();
   const isEdit = Boolean(id);
 
+  const { mutate, isPending } = useCreateEvent();
+  const { mutate: m2, isPending: l2 } = useUpdateEvent(id);
+
+  const isLoading = isPending || l2;
+
   const [formData, setFormData] = useState<FormDataProps>({
     title: "",
     description: "",
@@ -27,8 +32,6 @@ export function EventForm({
     tickets_sold: 0,
     imgUrl: "",
   });
-
-  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (event) {
@@ -54,7 +57,6 @@ export function EventForm({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
 
     try {
       const payload = new FormData();
@@ -80,16 +82,14 @@ export function EventForm({
       }
 
       if (isEdit && id) {
-        await updateEvent(id, payload);
+        m2(payload);
       } else {
-        await createEvent(payload);
+        mutate(payload);
       }
 
       router.push("/");
     } catch (err) {
       console.error("Error saving event:", err);
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -310,10 +310,10 @@ export function EventForm({
           <div className="flex items-center gap-3 pt-4">
             <button
               type="submit"
-              disabled={submitting}
+              disabled={isLoading}
               className="px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting
+              {isLoading
                 ? "Saving..."
                 : isEdit
                 ? "Update Event"

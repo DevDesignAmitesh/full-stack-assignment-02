@@ -8,10 +8,32 @@ import { formatDate } from "@/lib/utils";
 import { EmptyState } from "../EmptyState";
 import { EventRow } from "../EventRow";
 import { StatCard } from "../StatCard";
+import { useEvents } from "@/query/lib";
+import { LoadingSpinner } from "../LoadingSpinner";
 
 const ITEMS_PER_PAGE = 5;
 
-export function EventsList({ events }: { events: Events[] }) {
+export function EventsList() {
+  const { data: events, isLoading } = useEvents();
+
+  if (!events) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600">Event not found</p>
+        <Link
+          href="/"
+          className="text-sm text-gray-600 hover:text-gray-900 mt-4 inline-block"
+        >
+          Return to Events List
+        </Link>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 

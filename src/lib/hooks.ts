@@ -68,7 +68,7 @@ export async function createEvent(event: FormData): Promise<string | null> {
 }
 
 export async function updateEvent(
-  id: string,
+  id: string | null,
   event: FormData
 ): Promise<string | null> {
   try {

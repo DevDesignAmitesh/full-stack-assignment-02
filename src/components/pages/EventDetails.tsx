@@ -9,34 +9,49 @@ import {
   Trash2,
   Ticket,
 } from "lucide-react";
-import { Events } from "@/lib/types";
-import { deleteEvent } from "@/lib/hooks";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { StatusBadge } from "../StatusBadge";
 import { formatDate } from "@/lib/utils";
+import { useDeleteEvent, useEvent } from "@/query/lib";
+import { LoadingSpinner } from "../LoadingSpinner";
 
-export function EventDetail({ id, event }: { id: string; event: Events }) {
+export function EventDetail({ id }: { id: string }) {
+  const { data: event, isLoading } = useEvent(id);
+  const { mutate, isPending } = useDeleteEvent();
+
+  if (!event) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600">Event not found</p>
+        <Link
+          href="/"
+          className="text-sm text-gray-600 hover:text-gray-900 mt-4 inline-block"
+        >
+          Return to Events List
+        </Link>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   const router = useRouter();
 
   const handleDelete = async () => {
     if (!id) return;
 
-    setDeleting(true);
     try {
-      const res = await deleteEvent(id);
-      if (!res) {
-        throw new Error("Unable to delete this event");
-      }
+      mutate(id);
       router.push("/");
     } catch (error) {
       console.error("Error deleting event:", error);
       alert("Failed to delete event. Please try again.");
     } finally {
-      setDeleting(false);
     }
   };
 
@@ -173,14 +188,14 @@ export function EventDetail({ id, event }: { id: string; event: Events }) {
             <div className="flex items-center gap-3">
               <button
                 onClick={handleDelete}
-                disabled={deleting}
+                disabled={isPending}
                 className="flex-1 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {deleting ? "Deleting..." : "Delete Event"}
+                {isPending ? "Deleting..." : "Delete Event"}
               </button>
               <button
                 onClick={() => setShowDeleteModal(false)}
-                disabled={deleting}
+                disabled={isPending}
                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel

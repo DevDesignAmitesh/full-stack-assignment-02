@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Layout } from "@/components/Layout";
 import { Toaster } from "sonner";
+import Providers from "@/query/Provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,9 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Layout>
-        <body>{children}</body>
-      </Layout>
+      <Providers>
+        <Layout>
+          <body>{children}</body>
+        </Layout>
+      </Providers>
       <Toaster richColors position="top-right" />
     </html>
   );
