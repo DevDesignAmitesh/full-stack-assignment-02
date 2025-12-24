@@ -3,7 +3,10 @@ import { ZodError } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
 
-export const BACKEND_URL = "http://localhost:3000";
+export const BACKEND_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://full-stack-assignment-02.vercel.app/"
+    : "http://localhost:3000";
 
 export const formatDate = (date: string) => {
   const data = new Date(date);
