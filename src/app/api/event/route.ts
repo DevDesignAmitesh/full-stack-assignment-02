@@ -27,8 +27,10 @@ export async function POST(req: Request) {
     const { success, error } = createOrUpdateEventSchema.safeParse(parsedData);
 
     if (!success) {
-      toast.error(zodErrorMessage({ error }));
-      return null;
+      return responsePlate({
+        message: zodErrorMessage({ error }),
+        status: 411,
+      });
     }
 
     console.log("formData while post");

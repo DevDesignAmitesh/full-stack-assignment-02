@@ -21,8 +21,10 @@ export async function GET(
     });
 
     if (!success) {
-      toast.error(zodErrorMessage({ error }));
-      return null;
+      return responsePlate({
+        message: zodErrorMessage({ error }),
+        status: 411,
+      });
     }
     const event = await db.query.events.findFirst({
       where: eq(events.id, data.eventId),
@@ -56,8 +58,10 @@ export async function PUT(
     });
 
     if (!success) {
-      toast.error(zodErrorMessage({ error }));
-      return null;
+      return responsePlate({
+        message: zodErrorMessage({ error }),
+        status: 411,
+      });
     }
     const existingEvent = await db.query.events.findFirst({
       where: eq(events.id, data.eventId),
@@ -84,8 +88,10 @@ export async function PUT(
       createOrUpdateEventSchema.safeParse(parsedData);
 
     if (!s2) {
-      toast.error(zodErrorMessage({ error: e2 }));
-      return null;
+      return responsePlate({
+        message: zodErrorMessage({ error: e2 }),
+        status: 411,
+      });
     }
 
     console.log("existingEvent");
@@ -154,8 +160,10 @@ export async function DELETE(
     });
 
     if (!success) {
-      toast.error(zodErrorMessage({ error }));
-      return null;
+      return responsePlate({
+        message: zodErrorMessage({ error }),
+        status: 411,
+      });
     }
     const event = await db.query.events.findFirst({
       where: eq(events.id, data.eventId),

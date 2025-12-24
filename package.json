@@ -10,7 +10,8 @@
     "migrate:db": "npx drizzle-kit migrate --config=./src/db/drizzle.config.ts",
     "generate:db": "npx drizzle-kit generate --config=./src/db/drizzle.config.ts",
     "push:db": "npx drizzle-kit push --config=./src/db/drizzle.config.ts",
-    "studio:db": "npx drizzle-kit studio --config=./src/db/drizzle.config.ts"
+    "studio:db": "npx drizzle-kit studio --config=./src/db/drizzle.config.ts",
+    "final:build": "bun i && bun run generate:db && bun run migrate:db && bun run build"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.12",
